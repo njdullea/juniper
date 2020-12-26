@@ -38,8 +38,8 @@ mod graphql_schema;
 
 use graphql_schema::{create_schema, Schema, test};
 
-const ADDRESS: &str = "localhost:8080";
-// const LOCAL_ADDRESS: &str = "0.0.0.0:8088";
+// const ADDRESS: &str = "localhost:8088";
+const ADDRESS: &str = "0.0.0.0:8088";
 
 fn main() -> io::Result<()> {
     test();
@@ -51,7 +51,7 @@ fn main() -> io::Result<()> {
             .service(web::resource("/graphiql").route(web::get().to(graphiql)))
     })
     .bind(ADDRESS)?
-    // .bind(localhost:8088")?
+    // .bind("localhost:8088")?
     .run()
 }
 
@@ -72,7 +72,8 @@ fn graphql(
 }
 
 fn graphiql() -> HttpResponse {
-    let gql_address = ADDRESS.to_owned() + "/graphql";
+    let gql_address = "http://".to_owned() + &ADDRESS.to_owned() + "/graphql";
+    // let html = graphiql_source("http://localhost:8088/graphql");
     let html = graphiql_source(&gql_address);
     HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
