@@ -38,6 +38,9 @@ mod graphql_schema;
 
 use graphql_schema::{create_schema, Schema, test};
 
+const ADDRESS: &str = "localhost:8080";
+// const LOCAL_ADDRESS: &str = "0.0.0.0:8088";
+
 fn main() -> io::Result<()> {
     test();
     let schema = std::sync::Arc::new(create_schema());
@@ -47,7 +50,7 @@ fn main() -> io::Result<()> {
             .service(web::resource("/graphql").route(web::post().to_async(graphql)))
             .service(web::resource("/graphiql").route(web::get().to(graphiql)))
     })
-    .bind("0.0.0.0:8088")?
+    .bind(ADDRESS)?
     // .bind(localhost:8088")?
     .run()
 }
@@ -69,7 +72,8 @@ fn graphql(
 }
 
 fn graphiql() -> HttpResponse {
-    let html = graphiql_source("http://localhost:8080/graphql");
+    let gql_address = ADDRESS.to_owned() + "/graphql";
+    let html = graphiql_source(&gql_address);
     HttpResponse::Ok()
         .content_type("text/html; charset=utf-8")
         .body(html)
